@@ -10,10 +10,13 @@ androidx-core-ktx = "1.12.0"
 androidx-espresso-core = "3.5.1"
 androidx-material = "1.11.0"
 androidx-test-junit = "1.1.5"
-compose = "1.6.2"
-compose-plugin = "1.6.0"
+compose = "1.6.5"
+compose-plugin = "1.6.1"
 junit = "4.13.2"
-kotlin = "1.9.22"
+kotlin = "1.9.23"
+mpfilepicker = "3.1.0"
+kotlinxIoCore = "0.3.2"
+okio = "3.9.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -28,6 +31,9 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIoCore" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

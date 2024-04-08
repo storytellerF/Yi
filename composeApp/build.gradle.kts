@@ -1,6 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,22 +7,22 @@ plugins {
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(project.projectDir.path)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            commonWebpackConfig {
+//                outputFileName = "composeApp.js"
+//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+//                    static = (static ?: mutableListOf()).apply {
+//                        // Serve sources to debug inside browser
+//                        add(project.projectDir.path)
+//                    }
+//                }
+//            }
+//        }
+//        binaries.executable()
+//    }
     
     androidTarget {
         compilations.all {
@@ -44,6 +42,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            binaryOption("bundleId", "com.storyteller-f.yi.ios-shared")
         }
     }
     
@@ -61,6 +60,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.mpfilepicker)
+            implementation(libs.okio)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -114,6 +115,6 @@ compose.desktop {
     }
 }
 
-compose.experimental {
-    web.application {}
-}
+//compose.experimental {
+//    web.application {}
+//}
