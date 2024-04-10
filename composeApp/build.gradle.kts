@@ -62,6 +62,9 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.mpfilepicker)
             implementation(libs.okio)
+
+            implementation(libs.precompose)
+            implementation(libs.precompose.viewmodel)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

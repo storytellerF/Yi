@@ -2,7 +2,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import okio.Path
 
-actual suspend fun getModules(dir: String): List<String> {
+actual suspend fun getModuleAndroidResourcePaths(dir: String): List<String> {
     TODO("Not yet implemented")
 }
 

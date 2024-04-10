@@ -23,7 +23,7 @@ import javax.swing.BoxLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-actual suspend fun getModules(dir: String): List<String> {
+actual suspend fun getModuleAndroidResourcePaths(dir: String): List<String> {
     println("getModules $dir")
     val r = Regex("[ \\w\\W]+?: \\[([\\w\\W/ ,]+?)]")
     return withContext(Dispatchers.IO) {
