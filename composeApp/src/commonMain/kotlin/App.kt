@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import okio.FileSystem
@@ -55,6 +56,11 @@ expect suspend fun getModules(dir: String): List<String>
 expect suspend fun getPngPreview(path: Path): ImageBitmap
 
 @Composable
+expect fun DraggableBox(data: () -> Any, block: @Composable () -> Unit)
+
+expect fun List<Path>.convertToFileList(): List<Any>
+
+@Composable
 private fun ResourcesPanel(selectedDir: String) {
     var sourceSets by remember {
         mutableStateOf(emptyList<Path>())
@@ -81,33 +87,33 @@ private fun ResourcesPanel(selectedDir: String) {
             sourceSets.flatMap { sourceSet ->
                 FileSystem.SYSTEM.list(sourceSet).filter {
                     it.name.endsWith("png")
-                }.groupBy {
-                    it.name.substringBefore(".")
-                }.toList().sortedBy {
-                    it.first
                 }
+            }.groupBy {
+                it.name.substringBefore(".")
+            }.toList().sortedByDescending {
+                it.second.size
             }
-
         }
     }
     Box {
-        Column {
-            LazyColumn(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 items(sourceSets, {
                     it.toString()
                 }) {
                     Text(it.toString())
                 }
             }
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 items(list, key = {
                     it.toString()
                 }) {
-                    Row {
-                        Box(modifier = Modifier.width(100.dp).height(100.dp)) {
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.size(100.dp)) {
                             val first = it.second.first()
                             val bitmap by produceState<ImageBitmap?>(null, first) {
-                                value = getPngPreview(it.second.first())
+                                value = getPngPreview(first)
                             }
                             bitmap?.let {
                                 Image(
@@ -117,9 +123,14 @@ private fun ResourcesPanel(selectedDir: String) {
                                 )
                             }
                         }
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(it.first)
                             Text(it.second.size.toString())
+                        }
+                        DraggableBox({
+                            it.second.convertToFileList()
+                        }) {
+                            Text("Drag", modifier = Modifier.size(100.dp))
                         }
                     }
 
@@ -128,6 +139,6 @@ private fun ResourcesPanel(selectedDir: String) {
         }
 
         if (isLoading)
-            Text(if (isLoading) "Loading" else "", modifier = Modifier.fillMaxSize())
+            Text(if (isLoading) "Loading" else "", modifier = Modifier.fillMaxSize(), textAlign = TextAlign.Center)
     }
 }
