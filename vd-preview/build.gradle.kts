@@ -1,8 +1,8 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+@file:Suppress("UnstableApiUsage")
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
 }
 
@@ -23,7 +23,7 @@ kotlin {
 //        }
 //        binaries.executable()
 //    }
-    
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -31,9 +31,9 @@ kotlin {
             }
         }
     }
-    
+
     jvm("desktop")
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -42,13 +42,13 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            binaryOption("bundleId", "com.storyteller-f.yi.ios-shared")
+            binaryOption("bundleId", "com.storyteller-f.yi.ios-shared.vd-preview")
         }
     }
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -68,13 +68,18 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(project(":vd-preview"))
+            // https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder
+            implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
+            implementation("com.google.guava:guava:33.1.0-jre")
+            // https://mvnrepository.com/artifact/log4j/log4j
+            implementation("log4j:log4j:1.2.17")
+            implementation(kotlin("reflect"))
         }
     }
 }
 
 android {
-    namespace = "com.storyteller_f.yi"
+    namespace = "com.storyteller_f.yi.vd_preview"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -82,11 +87,10 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.storyteller_f.yi"
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+    testOptions {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
     }
     packaging {
         resources {
@@ -106,19 +110,3 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.storyteller_f.yi"
-            packageVersion = "1.0.0"
-        }
-    }
-}
-
-//compose.experimental {
-//    web.application {}
-//}

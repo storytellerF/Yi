@@ -1,13 +1,10 @@
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.unit.dp
+import com.mistamek.drawablepreview.factories.IconPreviewFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.FileSystem
@@ -90,4 +87,10 @@ actual fun DraggableBox(data: () -> Any, block: @Composable () -> Unit) {
 
 actual fun List<Path>.convertToFileList(): List<Any> = map {
     it.toFile()
+}
+
+actual suspend fun getImagePreview(path: Path): ImageBitmap {
+    return withContext(Dispatchers.IO) {
+        IconPreviewFactory.getImage(path)!!.toComposeImageBitmap()
+    }
 }

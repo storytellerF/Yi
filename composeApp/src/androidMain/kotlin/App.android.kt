@@ -17,3 +17,7 @@ actual fun DraggableBox(data: () -> Any, block: @Composable () -> Unit) {
 actual fun List<Path>.convertToFileList(): List<Any> {
     TODO("Not yet implemented")
 }
+
+actual suspend fun getImagePreview(path: Path): ImageBitmap {
+    TODO("Not yet implemented")
+}

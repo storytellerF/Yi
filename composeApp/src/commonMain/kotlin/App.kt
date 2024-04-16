@@ -62,6 +62,8 @@ expect suspend fun getModuleAndroidResourcePaths(dir: String): List<String>
 
 expect suspend fun getPngPreview(path: Path): ImageBitmap
 
+expect suspend fun getImagePreview(path: Path) : ImageBitmap
+
 @Composable
 expect fun DraggableBox(data: () -> Any, block: @Composable () -> Unit)
 
@@ -175,6 +177,20 @@ private fun ResourceView(sourceSets: List<Path>, s: String) {
                         )
                     }
                 }
+                Box(modifier = Modifier.size(100.dp)) {
+                    val first = it.second.first()
+                    val bitmap by produceState<ImageBitmap?>(null, first) {
+                        value = getImagePreview(first)
+                    }
+                    bitmap?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = "image",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(it.first)
                     Text(it.second.size.toString())
