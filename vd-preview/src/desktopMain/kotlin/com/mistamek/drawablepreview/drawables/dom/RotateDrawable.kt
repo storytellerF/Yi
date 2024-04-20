@@ -7,7 +7,7 @@ import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 
-class RotateDrawable : Drawable() {
+class RotateDrawable(private val size: Int) : Drawable() {
     companion object {
         private const val FROM_DEGREES = "android:fromDegrees"
     }
@@ -17,7 +17,7 @@ class RotateDrawable : Drawable() {
 
     override fun inflate(element: Element) {
         super.inflate(element)
-        drawable = ItemDrawableInflater.getDrawableWithInflate(element)
+        drawable = ItemDrawableInflater.getDrawableWithInflate(element, size)
         degrees = Utils.parseAttributeAsInt(element.getAttribute(FROM_DEGREES), degrees)
     }
 

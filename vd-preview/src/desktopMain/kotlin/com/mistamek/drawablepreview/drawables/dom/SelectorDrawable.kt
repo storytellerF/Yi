@@ -5,7 +5,7 @@ import com.mistamek.drawablepreview.drawables.forEach
 import org.w3c.dom.Element
 import java.awt.image.BufferedImage
 
-open class SelectorDrawable : Drawable() {
+open class SelectorDrawable(private val size: Int) : Drawable() {
 
     companion object {
         private const val ITEM_TAG = "item"
@@ -45,8 +45,8 @@ open class SelectorDrawable : Drawable() {
                 }
             }
 
-            nodeToUse?.also {
-                drawable = ItemDrawableInflater.getDrawableWithInflate(it)
+            nodeToUse?.also { element1 ->
+                drawable = ItemDrawableInflater.getDrawableWithInflate(element1, size)
             }
         }
     }

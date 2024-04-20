@@ -43,14 +43,6 @@ actual suspend fun getModuleAndroidResourcePaths(dir: String): List<String> {
     }.distinct()
 }
 
-actual suspend fun getPngPreview(path: Path): ImageBitmap {
-    return withContext(Dispatchers.IO) {
-        FileSystem.SYSTEM.read(path) {
-            org.jetbrains.skia.Image.makeFromEncoded(readByteArray()).toComposeImageBitmap()
-        }
-    }
-}
-
 @Composable
 actual fun DraggableBox(data: () -> Any, block: @Composable () -> Unit) {
     Box {
@@ -89,8 +81,10 @@ actual fun List<Path>.convertToFileList(): List<Any> = map {
     it.toFile()
 }
 
-actual suspend fun getImagePreview(path: Path): ImageBitmap {
+actual suspend fun getImagePreview(path: Path, size: Int): Result<ImageBitmap> {
     return withContext(Dispatchers.IO) {
-        IconPreviewFactory.getImage(path)!!.toComposeImageBitmap()
+        runCatching {
+            IconPreviewFactory.getImage(path, size)!!.toComposeImageBitmap()
+        }
     }
 }

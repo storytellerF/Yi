@@ -10,8 +10,8 @@ import org.w3c.dom.Element
 object ItemDrawableInflater {
     private const val DRAWABLE = "android:drawable"
 
-    fun getDrawableWithInflate(element: Element): Drawable? {
-        return getDrawable(element).let {
+    fun getDrawableWithInflate(element: Element, size: Int): Drawable? {
+        return getDrawable(element, size).let {
             val drawable = it.second
             val elementToUse = it.first
             if (elementToUse != null) {
@@ -21,30 +21,30 @@ object ItemDrawableInflater {
         }
     }
 
-    fun getDrawable(element: Element): Pair<Element?, Drawable?> {
+    fun getDrawable(element: Element, size: Int): Pair<Element?, Drawable?> {
         if (element.hasAttribute(DRAWABLE)) {
-            return null to getDrawableFromAttribute(element)
+            return null to getDrawableFromAttribute(element, size)
         } else if (element.hasChildNodes()) {
-            return getDrawableFromChild(element)
+            return getDrawableFromChild(element, size)
         }
         return element to null
     }
 
-    private fun getDrawableFromAttribute(element: Element): Drawable {
+    private fun getDrawableFromAttribute(element: Element, size: Int): Drawable {
         val drawableAttr = element.getAttribute(DRAWABLE)
         return if (drawableAttr.startsWith("#")) {
-            ColorDrawable(drawableAttr)
+            ColorDrawable(drawableAttr, size)
         } else {
-            XmlImageFactory.getDrawable(drawableAttr)
+            XmlImageFactory.getDrawable(drawableAttr, size)
                 ?: Utils.getPsiFileFromPath(drawableAttr).let {
-                    IconDrawable().apply { childImage = IconPreviewFactory.getImage(it) }
+                    IconDrawable().apply { childImage = IconPreviewFactory.getImage(it, size) }
                 }
         }
     }
 
-    private fun getDrawableFromChild(element: Element): Pair<Element, Drawable?> {
+    private fun getDrawableFromChild(element: Element, size: Int): Pair<Element, Drawable?> {
         element.childNodes.forEachAsElement { childNode ->
-            return childNode to DrawableInflater.getDrawable(childNode)
+            return childNode to DrawableInflater.getDrawable(childNode, size)
         }
         return element to null
     }

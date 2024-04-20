@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage
 import kotlin.math.max
 import kotlin.math.min
 
-class GradientDrawable : Drawable() {
+class GradientDrawable(size: Int) : Drawable() {
 
     companion object {
         private const val SHAPE = "android:shape"

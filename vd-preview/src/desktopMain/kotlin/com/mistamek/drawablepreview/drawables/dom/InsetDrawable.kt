@@ -5,7 +5,7 @@ import com.mistamek.drawablepreview.drawables.Utils
 import org.w3c.dom.Element
 import java.awt.image.BufferedImage
 
-class InsetDrawable : Drawable() {
+class InsetDrawable(private val size: Int) : Drawable() {
 
     companion object {
         private const val INSET = "android:inset"
@@ -24,7 +24,7 @@ class InsetDrawable : Drawable() {
 
     override fun inflate(element: Element) {
         super.inflate(element)
-        drawable = ItemDrawableInflater.getDrawableWithInflate(element)
+        drawable = ItemDrawableInflater.getDrawableWithInflate(element, size)
 
         Utils.parseAttributeAsInt(element.getAttribute(INSET), 0).also { inset ->
             insetTop = inset

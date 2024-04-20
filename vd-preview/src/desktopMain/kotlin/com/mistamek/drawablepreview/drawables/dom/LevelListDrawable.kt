@@ -5,7 +5,7 @@ import com.mistamek.drawablepreview.drawables.forEachAsElement
 import org.w3c.dom.Element
 import java.awt.image.BufferedImage
 
-class LevelListDrawable : Drawable() {
+class LevelListDrawable(private val size: Int) : Drawable() {
 
     companion object {
         private const val ITEM_TAG = "item"
@@ -17,7 +17,7 @@ class LevelListDrawable : Drawable() {
         super.inflate(element)
         element.childNodes.forEachAsElement { childElement ->
             if (childElement.tagName == ITEM_TAG) {
-                drawable = ItemDrawableInflater.getDrawableWithInflate(childElement)
+                drawable = ItemDrawableInflater.getDrawableWithInflate(childElement, size)
                 return
             }
         }

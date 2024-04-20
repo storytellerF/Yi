@@ -7,7 +7,7 @@ import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-class BitmapDrawable : Drawable() {
+class BitmapDrawable(private val size: Int) : Drawable() {
 
     companion object {
         private const val SRC = "android:src"
@@ -21,7 +21,7 @@ class BitmapDrawable : Drawable() {
         super.inflate(element)
         childImage = element.getAttribute(SRC)
             .let { Utils.getPsiFileFromPath(it) }
-                .run { IconPreviewFactory.getImage(this) }
+                .run { IconPreviewFactory.getImage(this, size) }
 
         tintColor = Utils.parseAttributeAsColor(element.getAttribute(TINT), tintColor)
     }

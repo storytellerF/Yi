@@ -1,7 +1,6 @@
 package com.mistamek.drawablepreview.factories
 
 import com.android.ide.common.vectordrawable.VdPreview
-import com.mistamek.drawablepreview.SIZE
 import com.mistamek.drawablepreview.drawables.DrawableInflater
 import com.mistamek.drawablepreview.drawables.dom.Drawable
 import org.w3c.dom.Document
@@ -12,25 +11,34 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 object XmlImageFactory {
 
-    fun createXmlImage(path: String): BufferedImage? {
+    fun createXmlImage(path: String, size: Int): BufferedImage? {
         val document = parseDocument(path) ?: return null
 
-        return getDrawableImage(document.documentElement)
-                ?: StringBuilder(100).let { builder ->
-                    val clazz = VdPreview.TargetSize::class.java
-                    val imageTargetSize = clazz.methods.firstNotNullOfOrNull { method ->
-                        when (method.name) {
-                            "createSizeFromWidth", "createFromMaxDimension" ->
-                                method.invoke(null, SIZE) as? VdPreview.TargetSize
-                            else -> null
-                        }
-                    }
+        val drawableImage = getDrawableImage(document.documentElement, size)
+        if (drawableImage != null) {
+            return drawableImage
+        } else {
+            val clazz = VdPreview.TargetSize::class.java
+            val imageTargetSize = clazz.methods.firstNotNullOfOrNull { method ->
+                when (method.name) {
+                    "createSizeFromWidth", "createFromMaxDimension" ->
+                        method.invoke(null, size) as? VdPreview.TargetSize
 
-                    imageTargetSize?.let { VdPreview.getPreviewFromVectorDocument(imageTargetSize, document, builder) }
+                    else -> null
                 }
+            }
+
+            return imageTargetSize?.let {
+                val builder = StringBuilder(100)
+                VdPreview.getPreviewFromVectorDocument(imageTargetSize, document, builder).apply {
+                    println(builder.toString())
+                }
+            }
+        }
     }
 
-    fun getDrawable(path: String): Drawable? = parseDocument(path)?.let { DrawableInflater.getDrawable(it.documentElement) }
+    fun getDrawable(path: String, size: Int): Drawable? =
+        parseDocument(path)?.let { DrawableInflater.getDrawable(it.documentElement, size) }
 
     private fun parseDocument(path: String): Document? {
         val supportedFolder = Constants.SUPPORTED_FOLDERS.fold(false) { acc, next -> acc || path.contains(next) }
@@ -49,9 +57,9 @@ object XmlImageFactory {
         return document
     }
 
-    private fun getDrawableImage(rootElement: Element): BufferedImage? {
-        return DrawableInflater.getDrawable(rootElement)?.let { drawable ->
-            return@let BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB).also { image ->
+    private fun getDrawableImage(rootElement: Element, size: Int): BufferedImage? {
+        return DrawableInflater.getDrawable(rootElement, size)?.let { drawable ->
+            return@let BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB).also { image ->
                 drawable.draw(image)
             }
         }

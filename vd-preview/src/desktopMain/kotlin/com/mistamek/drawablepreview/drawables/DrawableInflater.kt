@@ -32,29 +32,29 @@ object DrawableInflater {
     private const val INSET_DRAWABLE = "inset"
     private const val BITMAP = "bitmap"
 
-    fun getDrawable(element: Element): Drawable? {
-        val drawable = createDrawable(element)
+    fun getDrawable(element: Element, size: Int): Drawable? {
+        val drawable = createDrawable(element, size)
         drawable?.inflate(element)
         return drawable
     }
 
-    private fun createDrawable(element: Element): Drawable? {
+    private fun createDrawable(element: Element, size: Int): Drawable? {
         return when (element.tagName) {
-            SELECTOR_DRAWABLE -> SelectorDrawable()
-            ANIMATED_SELECTOR_DRAWABLE -> SelectorDrawable()
-            LEVEL_LIST_DRAWABLE -> LevelListDrawable()
-            LAYER_DRAWABLE -> LayerDrawable()
-            TRANSITION_DRAWABLE -> LayerDrawable()
-            RIPPLE -> RippleDrawable()
-            ADAPTIVE_ICON -> AdaptiveIconDrawable()
-            COLOR_DRAWABLE -> ColorDrawable()
-            SHAPE_DRAWABLE -> GradientDrawable()
-            SCALE -> ScaleDrawable()
-            CLIP -> ItemDrawableInflater.getDrawable(element).second
-            ROTATE -> RotateDrawable()
-            ANIMATED_ROTATE -> RotateDrawable()
-            INSET_DRAWABLE -> InsetDrawable()
-            BITMAP -> BitmapDrawable()
+            SELECTOR_DRAWABLE -> SelectorDrawable(size)
+            ANIMATED_SELECTOR_DRAWABLE -> SelectorDrawable(size)
+            LEVEL_LIST_DRAWABLE -> LevelListDrawable(size)
+            LAYER_DRAWABLE -> LayerDrawable(size)
+            TRANSITION_DRAWABLE -> LayerDrawable(size)
+            RIPPLE -> RippleDrawable(size)
+            ADAPTIVE_ICON -> AdaptiveIconDrawable(size)
+            COLOR_DRAWABLE -> ColorDrawable(size)
+            SHAPE_DRAWABLE -> GradientDrawable(size)
+            SCALE -> ScaleDrawable(size)
+            CLIP -> ItemDrawableInflater.getDrawable(element, size).second
+            ROTATE -> RotateDrawable(size)
+            ANIMATED_ROTATE -> RotateDrawable(size)
+            INSET_DRAWABLE -> InsetDrawable(size)
+            BITMAP -> BitmapDrawable(size)
             else -> null
         }
     }

@@ -7,7 +7,7 @@ import org.w3c.dom.Element
 import java.awt.image.BufferedImage
 import kotlin.math.round
 
-class ScaleDrawable : Drawable() {
+class ScaleDrawable(private val size: Int) : Drawable() {
 
     companion object {
         private const val SCALE_HEIGHT = "android:scaleHeight"
@@ -22,7 +22,7 @@ class ScaleDrawable : Drawable() {
 
     override fun inflate(element: Element) {
         super.inflate(element)
-        drawable = ItemDrawableInflater.getDrawableWithInflate(element)
+        drawable = ItemDrawableInflater.getDrawableWithInflate(element, size)
 
         scaleHeight = Utils.parseAttributeAsPercent(element.getAttribute(SCALE_HEIGHT), scaleHeight)
         scaleWidth = Utils.parseAttributeAsPercent(element.getAttribute(SCALE_WIDTH), scaleWidth)

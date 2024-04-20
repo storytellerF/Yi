@@ -1,6 +1,5 @@
 package com.mistamek.drawablepreview.factories
 
-import com.mistamek.drawablepreview.SIZE
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
@@ -14,11 +13,12 @@ import javax.imageio.ImageIO
 object SvgImageFactory {
 
     fun createSvgImage(
-        path: String
+        path: String,
+        size: Int
     ): BufferedImage? {
         val transcoder = PNGTranscoder()
-        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, SIZE.toFloat())
-        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, SIZE.toFloat())
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, size.toFloat())
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, size.toFloat())
 
         try {
             val inputStream = FileInputStream(File(path))

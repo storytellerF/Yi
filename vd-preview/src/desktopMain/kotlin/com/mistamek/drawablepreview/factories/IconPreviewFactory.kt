@@ -3,6 +3,7 @@ package com.mistamek.drawablepreview.factories
 //import com.android.tools.adtui.ImageUtils
 //import com.intellij.psi.PsiManager
 //import com.intellij.util.ui.UIUtil
+import okio.Path
 import java.awt.image.BufferedImage
 
 object IconPreviewFactory {
@@ -35,12 +36,12 @@ object IconPreviewFactory {
 //        }
 //    }
 
-    fun getImage(virtualFile: okio.Path): BufferedImage? {
+    fun getImage(virtualFile: Path, size: Int): BufferedImage? {
         virtualFile.toString().let { path ->
             return when {
-                path.endsWith(Constants.XML_TYPE) -> XmlImageFactory.createXmlImage(path)
-                path.endsWith(Constants.SVG_TYPE) -> SvgImageFactory.createSvgImage(path)
-                else -> BitmapImageFactory.createBitmapImage(path)
+                path.endsWith(Constants.XML_TYPE) -> XmlImageFactory.createXmlImage(path, size)
+                path.endsWith(Constants.SVG_TYPE) -> SvgImageFactory.createSvgImage(path, size)
+                else -> BitmapImageFactory.createBitmapImage(path, size)
             }
         }
     }

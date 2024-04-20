@@ -8,7 +8,7 @@ import java.awt.Color
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 
-class RippleDrawable : Drawable() {
+class RippleDrawable(private val size: Int) : Drawable() {
 
     companion object {
         private const val COLOR = "android:color"
@@ -26,7 +26,7 @@ class RippleDrawable : Drawable() {
 
         element.childNodes.forEachAsElement { childElement ->
             if (childElement.tagName == ITEM_TAG) {
-                ItemDrawableInflater.getDrawableWithInflate(childElement)?.also { backgroundDrawables.add(it) }
+                ItemDrawableInflater.getDrawableWithInflate(childElement, size)?.also { backgroundDrawables.add(it) }
             }
         }
     }

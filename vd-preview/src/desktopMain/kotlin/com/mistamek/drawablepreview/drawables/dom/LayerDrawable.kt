@@ -7,7 +7,7 @@ import org.w3c.dom.Element
 import java.awt.image.BufferedImage
 import java.lang.UnsupportedOperationException
 
-class LayerDrawable : Drawable() {
+class LayerDrawable(val size: Int) : Drawable() {
 
     companion object {
         private const val ITEM_TAG = "item"
@@ -20,7 +20,7 @@ class LayerDrawable : Drawable() {
 
         element.childNodes.forEachAsElement { childNode ->
             if (childNode.tagName == ITEM_TAG) {
-                drawables.add(LayerDrawableItem((childNode)))
+                drawables.add(LayerDrawableItem(childNode, size))
             }
         }
     }
@@ -52,7 +52,7 @@ class LayerDrawable : Drawable() {
     }
 }
 
-class LayerDrawableItem(element: Element) : Drawable() {
+class LayerDrawableItem(element: Element, private val size: Int) : Drawable() {
     companion object {
         private const val WIDTH = "android:width"
         private const val HEIGHT = "android:height"
@@ -91,7 +91,7 @@ class LayerDrawableItem(element: Element) : Drawable() {
         left = Utils.parseAttributeAsInt(element.getAttribute(START), left)
         right = Utils.parseAttributeAsInt(element.getAttribute(END), right)
 
-        drawable = ItemDrawableInflater.getDrawableWithInflate(element)
+        drawable = ItemDrawableInflater.getDrawableWithInflate(element, size)
     }
 
     override fun draw(outputImage: BufferedImage) {

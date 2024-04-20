@@ -5,13 +5,13 @@ import org.w3c.dom.Element
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-class ColorDrawable() : Drawable() {
+class ColorDrawable(val size: Int) : Drawable() {
 
     companion object {
         private const val COLOR = "android:color"
     }
 
-    constructor(string: String) : this() {
+    constructor(string: String, size: Int) : this(size) {
         color = Utils.parseAttributeAsColor(string, null)
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
@@ -35,7 +36,9 @@ fun App() {
             }
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 Row {
-                    TextField(selectedDir.orEmpty(), onValueChange = {}, modifier = Modifier.weight(1f))
+                    TextField(selectedDir.orEmpty(), onValueChange = {
+                        selectedDir = it
+                    }, modifier = Modifier.weight(1f))
                     Button(onClick = {
                         showDirPicker = true
                     }) {
@@ -60,9 +63,7 @@ fun App() {
 
 expect suspend fun getModuleAndroidResourcePaths(dir: String): List<String>
 
-expect suspend fun getPngPreview(path: Path): ImageBitmap
-
-expect suspend fun getImagePreview(path: Path) : ImageBitmap
+expect suspend fun getImagePreview(path: Path, size: Int): Result<ImageBitmap>
 
 @Composable
 expect fun DraggableBox(data: () -> Any, block: @Composable () -> Unit)
@@ -149,13 +150,11 @@ private fun ResourceView(sourceSets: List<Path>, s: String) {
         derivedStateOf {
             d.flatMap { sourceSet ->
                 FileSystem.SYSTEM.list(sourceSet).filter {
-                    it.name.endsWith("png")
+                    it.name != ".DS_Store"
                 }
             }.groupBy {
                 it.name.substringBefore(".")
-            }.toList().sortedByDescending {
-                it.second.size
-            }
+            }.toList()
         }
     }
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
@@ -163,45 +162,63 @@ private fun ResourceView(sourceSets: List<Path>, s: String) {
             it.toString()
         }) {
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Box(modifier = Modifier.size(100.dp)) {
-                    val first = it.second.first()
-                    val bitmap by produceState<ImageBitmap?>(null, first) {
-                        value = getPngPreview(first)
-                    }
-                    bitmap?.let {
-                        Image(
-                            bitmap = it,
-                            contentDescription = "image",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-                Box(modifier = Modifier.size(100.dp)) {
-                    val first = it.second.first()
-                    val bitmap by produceState<ImageBitmap?>(null, first) {
-                        value = getImagePreview(first)
-                    }
-                    bitmap?.let {
-                        Image(
-                            bitmap = it,
-                            contentDescription = "image",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(it.first)
-                    Text(it.second.size.toString())
-                }
-                DraggableBox({
-                    it.second.convertToFileList()
-                }) {
-                    Text("Drag", modifier = Modifier.size(100.dp))
-                }
-            }
+            ResourceItem(it)
 
         }
+    }
+}
+
+@Composable
+private fun ResourceItem(it: Pair<String, List<Path>>) {
+    var dialogMessage by mutableStateOf("")
+
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.size(100.dp)) {
+            val first = it.second.first()
+            val pxValue = with(LocalDensity.current) { 100.dp.toPx() }
+            val bitmap by produceState<Result<ImageBitmap>>(Result.failure(Exception("not ready")), first) {
+                value = getImagePreview(first, pxValue.toInt())
+            }
+            LaunchedEffect(bitmap) {
+                if (bitmap.isFailure) {
+                    bitmap.exceptionOrNull()?.printStackTrace()
+                }
+            }
+            if (bitmap.isSuccess) {
+                Image(
+                    bitmap = bitmap.getOrThrow(),
+                    contentDescription = "image",
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Text("Error", modifier = Modifier.clickable {
+                    val t = bitmap.exceptionOrNull()?.stackTraceToString().orEmpty()
+                    println(t)
+                    dialogMessage = t
+                })
+            }
+        }
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(it.first)
+            Text(it.second.first().toString())
+            Text(it.second.size.toString())
+        }
+        DraggableBox({
+            it.second.convertToFileList()
+        }) {
+            Text("Drag", modifier = Modifier.size(100.dp))
+        }
+    }
+    if (dialogMessage.isNotEmpty()) {
+        AlertDialog({
+            dialogMessage = ""
+        }, {
+            dialogMessage = ""
+        }, title = {
+            Text("Error")
+        }, text = {
+            Text(dialogMessage)
+        })
     }
 }
